@@ -16,7 +16,8 @@
     "@discordx/importer": "^1.2.2",
     "@discordx/pagination": "^3.4.1",
     "discord.js": "^14.11.0",
-    "discordx": "^11.7.6"
+    "discordx": "^11.7.6",
+    "rcon-client": "^4.2.3"
   },
   "devDependencies": {
     "@types/node": "^20.3.1",

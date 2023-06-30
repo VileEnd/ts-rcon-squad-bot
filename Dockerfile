@@ -4,7 +4,7 @@ FROM node:lts-alpine as build-runner
 # Set temp directory
 WORKDIR /tmp/app
 
-ENV BOT_TOKEN=MTEyNDM2OTc1MzAyOTQ4NDY0NQ.G8AzIb.sib3CRlxk6npO3s5aN3nHbk9eu5PTlCi9WMmtc
+ENV BOT_TOKEN=Nzc2ODU2NjkxODYwODMyMjcw.GfFuSB.AXTpQptcz7ovNHO51t-o1Z40RFG4NDK5kvHAKY
 
 # Move package.json
 COPY package.json .
