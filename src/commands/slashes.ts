@@ -5,7 +5,6 @@ import { Discord, MetadataStorage, Slash } from "discordx";
 
 @Discord()
 export class SlashExample {
-  // example: pagination for all slash command
   @Slash({
     description: "Pagination for all slash command",
     name: "all-commands",

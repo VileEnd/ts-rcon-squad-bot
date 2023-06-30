@@ -50,7 +50,7 @@ export class Example {
       );
 
     // send it
-    interaction.editReply({
+    await interaction.editReply({
       components: [buttonRow],
       content: "select your role!",
     });
