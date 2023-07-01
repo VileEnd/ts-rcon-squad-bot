@@ -7,6 +7,7 @@ import {
   SimpleCommandOptionType,
   Slash,
 } from "discordx";
+import {rcon } from "../utils/rconInstance.js";
 
 @Discord()
 export class Example {
@@ -14,7 +15,11 @@ export class Example {
   hello(command: SimpleCommandMessage): void {
     command.message.reply(`👋 ${command.message.member}`);
   }
+  @SimpleCommand({})
+  async nextmap(command: SimpleCommandMessage): Promise<void> {
 
+    await command.message.reply(await rcon.showNextMap());
+  }
   @SimpleCommand({ argSplitter: "+" })
   sum(
     @SimpleCommandOption({ name: "num1", type: SimpleCommandOptionType.Number })

@@ -2,12 +2,9 @@ import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
 import { IntentsBitField, ActivityType } from "discord.js";
 import { Client } from "discordx";
-import {RconService} from "./utils/rconService.js";
-
-let squadServerHost = '185.250.250.162';
-let squadServerPort = 27170; // Replace with your Squad server's RCON port
-let squadRconPassword = 'ILoveYOu';
-
+import {configDotenv} from "dotenv";
+import {init, rcon} from "./utils/rconInstance.js";
+configDotenv()
 
 export const bot = new Client({
   intents: [
@@ -45,6 +42,7 @@ async function run() {
   if (!process.env.BOT_TOKEN) {
     throw Error("Could not find BOT_TOKEN in your environment");
   }
+  await init();
   await bot.login(process.env.BOT_TOKEN);
 }
 
@@ -68,10 +66,8 @@ export function extractPlayerDetails(line: string): { id: number, steamId: strin
   return { id, steamId, name, teamId, squadId, isLeader, role };
 }
 export async function getSquadServerInfo(): Promise<{ players: Array<{ id: number, steamId: string, name: string, teamId: number, squadId: string | null, isLeader: boolean, role: string }>, playerCount: number } | null> {
-
-const rcon = new RconService(squadServerHost,squadServerPort,squadRconPassword)
   try {
-    await rcon.connect()
+    console.log('test')
     const response = await rcon.listPlayers();
     console.log(response.toUpperCase());
 
@@ -89,11 +85,9 @@ const rcon = new RconService(squadServerHost,squadServerPort,squadRconPassword)
     return { players, playerCount: players.length };
   } catch (error) {
     throw Error(`Error retrieving Squad server info: ${error}`);
-  } finally {
-    await rcon.disconnect();
   }
 
-  return null;
+
 }
 
 async function setActivity(client: any): Promise<void> {

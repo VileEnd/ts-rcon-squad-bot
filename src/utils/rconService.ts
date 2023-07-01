@@ -3,9 +3,13 @@ import { Rcon } from "rcon-client";
 export class RconService {
     private rcon: Rcon;
 
-    constructor(private host: string, private port: number, private password: string) {
-        this.rcon = new Rcon({ host, port, password });
-    }
+    constructor(private host: string | undefined, private port : number | undefined, private password: string | undefined) {
+        if(host && port && password) {
+            this.rcon = new Rcon({host, port, password});
+        } else {
+            throw new Error();
+        }
+        }
 
     public async connect(): Promise<void> {
         this.rcon.on("connect", () => console.log("connected"));

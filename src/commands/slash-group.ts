@@ -1,13 +1,14 @@
 import type { CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
+import {rcon} from "../utils/rconInstance.js";
 
 @Discord()
-@SlashGroup({ description: "testing", name: "testing" })
-@SlashGroup({ description: "maths", name: "maths", root: "testing" })
+@SlashGroup({ description: "testing", name: "squad" })
+@SlashGroup({ description: "maths", name: "maths", root: "squad" })
 export class GroupExample {
   @Slash({ description: "add" })
-  @SlashGroup("maths", "testing")
+  @SlashGroup("maths", "squad")
   add(
     @SlashOption({
       description: "x value",
@@ -27,9 +28,14 @@ export class GroupExample {
   ): void {
     interaction.reply(String(x + y));
   }
+  @Slash({description: 'nextmap'})
+  @SlashGroup('nextmap', 'squad')
+  async nextmap(): Promise<string> {
 
-  @Slash({ description: "multiply" })
-  @SlashGroup("maths", "testing")
+      return await rcon.showNextMap()
+  }
+  @Slash({ description: "set notification" })
+  @SlashGroup("squad_message", "squad")
   multiply(
     @SlashOption({
       description: "x value",
@@ -51,7 +57,7 @@ export class GroupExample {
   }
 
   @Slash({ description: "root" })
-  @SlashGroup("testing")
+  @SlashGroup("squad")
   root(
     @SlashOption({
       description: "text",
