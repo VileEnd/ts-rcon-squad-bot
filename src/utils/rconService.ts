@@ -179,7 +179,7 @@ export class RconService {
     }
 
     public async adminVoteNextLevel(): Promise<string> {
-        return await this.sendCommand('AdminVoteNextLevel');
+        return await this.sendCommand("AdminVoteNextLevel +JensensRange+Mutaha+Narva+Skorpo 30");
     }
 
     public async adminVoteNextLayer(): Promise<string> {

@@ -1,4 +1,4 @@
-import type { CommandInteraction } from "discord.js";
+ import type { CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
 import { Discord, Slash, SlashChoice, SlashOption } from "discordx";
 

@@ -22,6 +22,8 @@ export const bot = new Client({
 });
 
 bot.once("ready", async () => {
+  await  bot.clearApplicationCommands()
+  console.log("commands cleared")
   await bot.initApplicationCommands();
   console.log("Bot started");
 

@@ -1,73 +1,113 @@
 import type { CommandInteraction } from "discord.js";
 import { ApplicationCommandOptionType } from "discord.js";
-import { Discord, Slash, SlashGroup, SlashOption } from "discordx";
+import {Discord, Guard, Slash, SlashGroup, SlashOption} from "discordx";
 import {rcon} from "../utils/rconInstance.js";
+import {UserCheck} from "../guards/userCheck.js";
 
 @Discord()
 @SlashGroup({ description: "testing", name: "squad" })
 @SlashGroup({ description: "maths", name: "maths", root: "squad" })
-export class GroupExample {
-  @Slash({ description: "add" })
-  @SlashGroup("maths", "squad")
-  add(
-    @SlashOption({
-      description: "x value",
-      name: "x",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    x: number,
-    @SlashOption({
-      description: "y value",
-      name: "y",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    y: number,
-    interaction: CommandInteraction
-  ): void {
-    interaction.reply(String(x + y));
-  }
-  @Slash({description: 'nextmap'})
-  @SlashGroup('nextmap', 'squad')
-  async nextmap(): Promise<string> {
+export class SquadCommands {
 
-      return await rcon.showNextMap()
-  }
-  @Slash({ description: "set notification" })
-  @SlashGroup("squad_message", "squad")
-  multiply(
-    @SlashOption({
-      description: "x value",
-      name: "x",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    x: number,
-    @SlashOption({
-      description: "y value",
-      name: "y",
-      required: true,
-      type: ApplicationCommandOptionType.Number,
-    })
-    y: number,
-    interaction: CommandInteraction
-  ): void {
-    interaction.reply(String(x * y));
-  }
-
-  @Slash({ description: "root" })
+  @Slash({ description: "shows the next map" })
   @SlashGroup("squad")
-  root(
-    @SlashOption({
-      description: "text",
-      name: "text",
-      required: true,
-      type: ApplicationCommandOptionType.String,
-    })
-    text: string,
+  @Guard(UserCheck)
+  nextmap(
     interaction: CommandInteraction
   ): void {
-    interaction.reply(text);
+      rcon.showNextMap().then(nextMap => {
+          interaction.reply(nextMap).catch(error => {
+              // Handle the error here
+              console.log(error);
+          });
+      }).catch(error => {
+          // Handle the error here
+          console.log(error);
+      });
   }
+
+    @Slash({ description: "shows the current map" })
+    @SlashGroup("squad")
+    currentmap(
+        interaction: CommandInteraction
+    ): void {
+        rcon.showCurrentMap().then(nextMap => {
+            interaction.reply(nextMap).catch(error => {
+                // Handle the error here
+                console.log(error);
+            });
+        }).catch(error => {
+            // Handle the error here
+            console.log(error);
+        });
+    }
+
+    @Slash({ description: "kick a player based on its name" })
+    @SlashGroup("squad")
+    kick(
+        @SlashOption({
+            description:"Name or SteamId",
+            name:"x",
+            required: true,
+            type: ApplicationCommandOptionType.String
+        })
+        x: string,
+        @SlashOption({
+            description:"Reason for kick",
+            name:"y",
+            required: true,
+            type: ApplicationCommandOptionType.String
+        })
+            y: string,
+        interaction: CommandInteraction
+    ): void {
+        rcon.adminKick(x,y).then(nextMap => {
+            interaction.reply(nextMap).catch(error => {
+                // Handle the error here
+                console.log(error);
+            });
+        }).catch(error => {
+            // Handle the error here
+            console.log(error);
+        });
+    }
+    @Slash({ description: "ends the current match" })
+    @SlashGroup("squad")
+    endmatch(
+        interaction: CommandInteraction
+    ): void {
+        rcon.adminEndMatch().then(nextMap => {
+            interaction.reply(nextMap).catch(error => {
+                // Handle the error here
+                console.log(error);
+            });
+        }).catch(error => {
+            // Handle the error here
+            console.log(error);
+        });
+    }
+
+
+    @Slash({ description: "shows the next Layer" })
+    @SlashGroup("squad")
+    setnextlayer(
+        interaction: CommandInteraction
+    ): void {
+       let user =interaction.user
+        console.log(user.id)
+        console.log(user.username)
+
+        if(user.id === "292025326371078149"){
+        rcon.adminVoteNextLevel().then(nextMap => {
+            interaction.reply(nextMap ).catch(error => {
+                // Handle the error here
+                console.log(error);
+            });
+        }).catch(error => {
+            // Handle the error here
+            console.log(error);
+        });
+    }else{
+            interaction.reply(`${user.username}: No rights to execute this command`)
+        }}
 }
