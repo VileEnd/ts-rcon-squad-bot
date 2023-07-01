@@ -2,7 +2,12 @@ import { dirname, importx } from "@discordx/importer";
 import type { Interaction, Message } from "discord.js";
 import { IntentsBitField, ActivityType } from "discord.js";
 import { Client } from "discordx";
-import { getSquadServerInfo } from "./utils/utils-rcon";
+import {RconService} from "./utils/rconService.js";
+
+let squadServerHost = '185.250.250.162';
+let squadServerPort = 27170; // Replace with your Squad server's RCON port
+let squadRconPassword = 'ILoveYOu';
+
 
 export const bot = new Client({
   intents: [
@@ -24,7 +29,7 @@ bot.once("ready", async () => {
   console.log("Bot started");
 
   // Here we set the activity every 20 seconds.
-  setInterval(() => setActivity(bot), 20 * 1000);
+  setInterval(() => setActivity(bot), 60 * 1000);
 });
 
 bot.on("interactionCreate", (interaction: Interaction) => {
@@ -45,7 +50,51 @@ async function run() {
 
 run();
 
+// Function to handle player details extraction
+export function extractPlayerDetails(line: string): { id: number, steamId: string, name: string, teamId: number, squadId: string | null, isLeader: boolean, role: string } | null {
+  const playerRegex = /ID: (\d+) \| SteamID: (\d+) \| Name: (.+) \| Team ID: (\d+) \| Squad ID: (.+) \| Is Leader: (\w+) \| Role: (.+)/;
+  const match = line.match(playerRegex);
 
+  if (!match) return null;
+
+  const id = parseInt(match[1]);
+  const steamId = match[2];
+  const name = match[3];
+  const teamId = parseInt(match[4]);
+  const squadId = match[5] !== "N/A" ? match[5] : null;
+  const isLeader = match[6].toLowerCase() === 'true';
+  const role = match[7];
+
+  return { id, steamId, name, teamId, squadId, isLeader, role };
+}
+export async function getSquadServerInfo(): Promise<{ players: Array<{ id: number, steamId: string, name: string, teamId: number, squadId: string | null, isLeader: boolean, role: string }>, playerCount: number } | null> {
+
+const rcon = new RconService(squadServerHost,squadServerPort,squadRconPassword)
+  try {
+    await rcon.connect()
+    const response = await rcon.listPlayers();
+    console.log(response.toUpperCase());
+
+    const nextMap = await rcon.showNextMap();
+    const currentMap = await rcon.showCurrentMap();
+    console.log(currentMap)
+    console.log(nextMap)
+
+    const lines = response.split('\n');
+    const players = lines
+        .filter(line => line.startsWith('ID'))
+        .map(extractPlayerDetails)
+        .filter(player => player !== null) as { id: number, steamId: string, name: string, teamId: number, squadId: string | null, isLeader: boolean, role: string }[];
+
+    return { players, playerCount: players.length };
+  } catch (error) {
+    throw Error(`Error retrieving Squad server info: ${error}`);
+  } finally {
+    await rcon.disconnect();
+  }
+
+  return null;
+}
 
 async function setActivity(client: any): Promise<void> {
   const serverInfo = await getSquadServerInfo();
